@@ -1,0 +1,6 @@
+include *.sh
+include api/model/model.pth
+include api/model/config.yaml
+include requirements.txt
+graft tests
+global-exclude *.pyc

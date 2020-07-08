@@ -1,0 +1,4 @@
+FLASK_APP=api
+FLASK_ENV=development
+FLASK_RUN_PORT=5000
+SECRET_KEY=cherry

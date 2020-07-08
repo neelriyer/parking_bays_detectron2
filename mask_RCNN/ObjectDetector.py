@@ -1,0 +1,306 @@
+
+import os
+import urllib.request
+import json
+import numpy
+import numpy as np
+from PIL import Image
+from PIL import ImageDraw
+
+import cv2 as cv
+import numpy
+import keras
+
+from keras_retinanet import models
+from keras_retinanet.utils.image import read_image_bgr, preprocess_image, resize_image
+from keras_retinanet.utils.visualization import draw_box, draw_caption
+from keras_retinanet.utils.colors import label_color
+
+import os
+import time
+import tensorflow as tf
+
+import argparse
+import time
+
+from PIL import Image
+from PIL import ImageDraw
+
+import io
+#import detect
+#import tflite_runtime.interpreter as tflite
+from tensorflow.compat.v1.lite import Interpreter
+#from tensorflow.compat.v2.lite import Interpreter
+#from tensorflow.contrib.lite import Interpreter
+
+# additional shit
+import subprocess
+
+classNames = {0: 'background',
+			1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane', 6: 'bus',
+			7: 'train', 8: 'truck', 9: 'boat', 10: 'traffic light', 11: 'fire hydrant',
+			13: 'stop sign', 14: 'parking meter', 15: 'bench', 16: 'bird', 17: 'cat',
+			18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear',
+			24: 'zebra', 25: 'giraffe', 27: 'backpack', 28: 'umbrella', 31: 'handbag',
+			32: 'tie', 33: 'suitcase', 34: 'frisbee', 35: 'skis', 36: 'snowboard',
+			37: 'sports ball', 38: 'kite', 39: 'baseball bat', 40: 'baseball glove',
+			41: 'skateboard', 42: 'surfboard', 43: 'tennis racket', 44: 'bottle',
+			46: 'wine glass', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
+			51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
+			56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
+			61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed',
+			67: 'dining table', 70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse',
+			75: 'remote', 76: 'keyboard', 77: 'cell phone', 78: 'microwave', 79: 'oven',
+			80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
+			86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush'}
+
+
+
+# existing detector dunctions
+class Detector:
+
+	# vanilla model	
+	def detectObject(self, imName):
+
+		import cv2 as cv
+
+		cvNet = cv.dnn.readNetFromTensorflow('model/object_detection/frozen_inference_graph.pb','model/object_detection/ssd_mobilenet_v1_coco_2017_11_17.pbtxt')
+		img = cv.cvtColor(numpy.array(imName), cv.COLOR_BGR2RGB)
+		cvNet.setInput(cv.dnn.blobFromImage(img, 0.007843, (300, 300), (127.5, 127.5, 127.5), swapRB=True, crop=False))
+		detections = cvNet.forward()
+		cols = img.shape[1]
+		rows = img.shape[0]
+
+		for i in range(detections.shape[2]):
+			confidence = detections[0, 0, i, 2]
+			if confidence > 0.5:
+				class_id = int(detections[0, 0, i, 1])
+
+				xLeftBottom = int(detections[0, 0, i, 3] * cols)
+				yLeftBottom = int(detections[0, 0, i, 4] * rows)
+				xRightTop = int(detections[0, 0, i, 5] * cols)
+				yRightTop = int(detections[0, 0, i, 6] * rows)
+
+				cv.rectangle(img, (xLeftBottom, yLeftBottom), (xRightTop, yRightTop),
+										 (0, 0, 255))
+				if class_id in classNames:
+					label = classNames[class_id] + ": " + str(confidence)
+					labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+					yLeftBottom = max(yLeftBottom, labelSize[1])
+					cv.putText(img, label, (xLeftBottom+5, yLeftBottom), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255))
+
+		img = cv.imencode('.jpg', img)[1].tobytes()
+		return img
+
+
+	# retinanet model
+	def run_detection_image(self, filepath):
+
+		# read image
+		image = read_image_bgr(filepath)
+
+		# load model
+		model_path = 'model/parkinglots_driveway/resnet50_csv_12_inference.h5'
+		model = models.load_model(model_path, backbone_name='resnet50')
+		labels_to_names = {0: 'parkinglot', 1: 'driveway'}
+
+
+		# copy to draw on
+		draw = image.copy()
+		draw = cv.cvtColor(draw, cv.COLOR_BGR2RGB)
+
+		# preprocess image for network
+		image = preprocess_image(image)
+		image, scale = resize_image(image)
+
+		# process image
+		start = time.time()
+		boxes, scores, labels = model.predict_on_batch(numpy.expand_dims(image, axis=0))
+		print("processing time: ", time.time() - start)
+
+		# correct for image scale
+		boxes /= scale
+
+		# visualize detections
+		for box, score, label in zip(boxes[0], scores[0], labels[0]):
+			# scores are sorted so we can break
+			if score < 0.5:
+					break
+
+			color = label_color(label)
+			
+			b = box.astype(int)
+			draw_box(draw, b, color=color)
+
+			caption = "{} {:.3f}".format(labels_to_names[label], score)
+			draw_caption(draw, b, caption)
+
+
+		file, ext = os.path.splitext(filepath)
+		image_name = file.split('/')[-1] + ext
+		output_path = os.path.join('examples/results/', image_name)
+		
+		draw_conv = cv.cvtColor(draw, cv.COLOR_BGR2RGB)
+		img = draw_conv
+		img = cv.imencode('.jpg', img)[1].tobytes()
+		#cv.imwrite(output_path, draw_conv)
+
+		return img
+
+
+
+	# mask_RCNN
+	def mask_RCNN(self, filepath):
+
+		# -*- coding: utf-8 -*-
+		"""demo.ipynb
+
+		Automatically generated by Colaboratory.
+
+		Original file is located at
+		    https://colab.research.google.com/github/matterport/Mask_RCNN/blob/master/samples/demo.ipynb
+
+		# Mask R-CNN Demo
+
+		A quick intro to using the pre-trained model to detect and segment objects.
+		"""
+
+		# Commented out IPython magic to ensure Python compatibility.
+		import os
+		import sys
+		import random
+		import math
+		import numpy as np
+		import skimage.io
+		import matplotlib
+		import matplotlib.pyplot as plt
+
+		# Root directory of the project
+		ROOT_DIR = os.getcwd()+'/repo'
+
+		# Import Mask RCNN
+		sys.path.append(ROOT_DIR)  # To find local version of the library
+		from mrcnn import utils
+		import mrcnn.model as modellib
+		from mrcnn import visualize
+		# Import COCO config
+		sys.path.append(os.path.join(ROOT_DIR, "samples/coco/"))  # To find local version
+		# import coco
+		from samples.coco import coco
+
+		# %matplotlib inline 
+
+		# Directory to save logs and trained model
+		MODEL_DIR = os.path.join(ROOT_DIR, "logs")
+
+		# Local path to trained weights file
+		COCO_MODEL_PATH = '/root/mask_rcnn_coco.h5'
+		# Download COCO trained weights from Releases if needed
+		# if not os.path.exists(COCO_MODEL_PATH):
+		#     utils.download_trained_weights(COCO_MODEL_PATH)
+
+		# Directory of images to run detection on
+		IMAGE_DIR = os.path.join(ROOT_DIR, "images")
+
+
+		"""## Configurations
+
+		We'll be using a model trained on the MS-COCO dataset. The configurations of this model are in the ```CocoConfig``` class in ```coco.py```.
+
+		For inferencing, modify the configurations a bit to fit the task. To do so, sub-class the ```CocoConfig``` class and override the attributes you need to change.
+		"""
+
+		class InferenceConfig(coco.CocoConfig):
+		    # Set batch size to 1 since we'll be running inference on
+		    # one image at a time. Batch size = GPU_COUNT * IMAGES_PER_GPU
+		    GPU_COUNT = 1
+		    IMAGES_PER_GPU = 1
+
+		config = InferenceConfig()
+		config.display()
+
+		"""## Create Model and Load Trained Weights"""
+
+		# Create model object in inference mode.
+		model = modellib.MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=config)
+
+		# Load weights trained on MS-COCO
+		model.load_weights(COCO_MODEL_PATH, by_name=True)
+
+		"""## Class Names
+
+		The model classifies objects and returns class IDs, which are integer value that identify each class. Some datasets assign integer values to their classes and some don't. For example, in the MS-COCO dataset, the 'person' class is 1 and 'teddy bear' is 88. The IDs are often sequential, but not always. The COCO dataset, for example, has classes associated with class IDs 70 and 72, but not 71.
+
+		To improve consistency, and to support training on data from multiple sources at the same time, our ```Dataset``` class assigns it's own sequential integer IDs to each class. For example, if you load the COCO dataset using our ```Dataset``` class, the 'person' class would get class ID = 1 (just like COCO) and the 'teddy bear' class is 78 (different from COCO). Keep that in mind when mapping class IDs to class names.
+
+		To get the list of class names, you'd load the dataset and then use the ```class_names``` property like this.
+		```
+		# Load COCO dataset
+		dataset = coco.CocoDataset()
+		dataset.load_coco(COCO_DIR, "train")
+		dataset.prepare()
+
+		# Print class names
+		print(dataset.class_names)
+		```
+
+		We don't want to require you to download the COCO dataset just to run this demo, so we're including the list of class names below. The index of the class name in the list represent its ID (first class is 0, second is 1, third is 2, ...etc.)
+		"""
+
+		# COCO Class names
+		# Index of the class in the list is its ID. For example, to get ID of
+		# the teddy bear class, use: class_names.index('teddy bear')
+		class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
+		               'bus', 'train', 'truck', 'boat', 'traffic light',
+		               'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird',
+		               'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear',
+		               'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
+		               'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
+		               'kite', 'baseball bat', 'baseball glove', 'skateboard',
+		               'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
+		               'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
+		               'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+		               'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
+		               'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
+		               'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
+		               'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
+		               'teddy bear', 'hair drier', 'toothbrush']
+
+		"""## Run Object Detection"""
+
+		# Load a random image from the images folder
+		# file_names = next(os.walk(IMAGE_DIR))[2]
+		# image = skimage.io.imread(os.path.join(IMAGE_DIR, random.choice(file_names)))
+
+		image = skimage.io.imread(filepath)
+		
+
+		# Run detection
+		results = model.detect([image], verbose=1)
+
+		# Visualize results
+		r = results[0]
+		print(r)
+		# print(results)
+		# visualize.display_instances(image, r['rois'], r['masks'], r['class_ids'], 
+		#                             class_names, r['scores'])
+
+		# visualize.save_image(image, 'image.jpg', r['rois'], r['masks'], \
+  #   r['class_ids'],r['scores'],class_names, scores_thresh=0.9,mode=0)
+
+
+		# return 'image.jpg'
+
+		with open("Output.txt", "w") as text_file:
+			print("r['rois'] {}".format(r['rois']), file=text_file)
+			print("r['masks'] {}".format(r['masks']), file=text_file)
+
+		return 'Output.txt'
+
+
+
+
+
+
+
+		

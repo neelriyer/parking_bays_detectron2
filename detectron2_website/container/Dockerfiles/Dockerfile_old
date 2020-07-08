@@ -1,0 +1,51 @@
+FROM python:3.6-slim-stretch
+
+# install stuff
+RUN apt update && apt install -y python3-dev gcc
+RUN apt-get install -y libgtk2.0-dev
+RUN apt-get install -y git
+RUN apt-get install -y wget
+# RUN apt-get install -y bash
+# RUN apt-get install -y curl
+
+
+# Set the working directory fo /app 
+WORKDIR /app
+
+# add dir
+COPY requirements.txt /app
+COPY coco.txt /app
+
+# install
+RUN pip install -r requirements.txt
+# RUN pip install -r coco.txt
+ENV PILLOW_VERSION=6.2.0
+
+
+# install detectron2
+RUN git clone https://github.com/facebookresearch/detectron2 detectron2_repo && pip install -e detectron2_repo
+
+
+# add dir
+COPY . /app
+
+# download model
+# RUN wget -P /app/ "https://drive.google.com/file/d/1eayobl8rd6040qCcHI_CrVXHte2RGD_m/view?usp=sharing"
+
+
+# Make port 80 available to the world outside the container
+EXPOSE 80
+# ENV PORT 8080
+# EXPOSE 8080
+
+
+# Define environment variable
+ENV NAME World
+ENV GOOGLE_APPLICATION_CREDENTIALS /app/key.json
+
+
+# EXPOSE 5000
+# CMD python app.py
+CMD ["python", "app.py"] 
+
+

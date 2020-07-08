@@ -1,0 +1,1 @@
+from .errors import errorhandler as errorhandler_blueprint

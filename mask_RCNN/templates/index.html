@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		
+		<!-- Required dependencies -->
+		<script type="text/javascript"
+						src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.6.1/prop-types.min.js"></script>
+		<script type="text/javascript"
+						src="https://cdnjs.cloudflare.com/ajax/libs/react/16.3.2/umd/react.production.min.js"></script>
+		<script type="text/javascript"
+						src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.3.2/umd/react-dom.production.min.js"></script>
+		<script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+		<script type="text/babel" data-presets="es2017, stage-3"
+						data-plugins="syntax-async-functions,transform-class-properties,transform-es2015-modules-umd, transform-async-to-generator"></script>
+		<!-- Optional dependencies -->
+		<script type="text/javascript"
+						src="https://cdnjs.cloudflare.com/ajax/libs/react-transition-group/2.2.1/react-transition-group.min.js"></script>
+		<script type="text/javascript"
+						src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+		<script type="text/javascript"
+						src="https://cdnjs.cloudflare.com/ajax/libs/react-popper/0.10.4/umd/react-popper.min.js"></script>
+
+		<!-- Reactstrap -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reactstrap/7.1.0/reactstrap.min.js"></script>
+		<script src=" https://cdnjs.cloudflare.com/ajax/libs/react-router/4.3.1/react-router.min.js"></script>
+
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/react-markdown/4.0.6/react-markdown.js"></script>
+		<script src="https://unpkg.com/react-router-dom@4.3.1/umd/react-router-dom.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+
+		<!-- Lastly, include your app's bundle -->
+		<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
+		<link type="text/css" rel="stylesheet" href="css/custom.css"/>
+
+</head>
+
+
+<body>
+
+<h1>Spot Parking Parkinglots App - Dev mode</h1>
+
+<br>
+
+<h2>Detectron2 parkinglot detection</h2>
+<xmp>
+   classNames = 
+							{0: 'Bay',
+							1: 'Disabled Bay'}
+</xmp>
+<form action = "/mask_rcnn" method = "POST" enctype = "multipart/form-data">
+	<input type = "file" name = "file" />
+	<input type = "submit"/>
+</form>
+<form action = "/mask_rcnn" method = "GET" enctype = "multipart/form-data">
+	<input type="text" name="url">
+	<input type = "submit"/>
+</form>
+<form action = "/mask_rcnn" method = "GET" enctype = "multipart/form-data">
+  <select name="url">
+	<option value="https://raw.githubusercontent.com/spiyer99/retinanet/master/retinanet/labelled_images/coogee__1929664/img/1929664_1258805.jpg">coogee</option>
+	<option value="https://raw.githubusercontent.com/spiyer99/retinanet/master/retinanet/labelled_images/roseberry__1929374/img/1929374_1258839.jpg">roseberry</option>
+  </select>
+  <input type="submit" value = "Submit" name = "url">
+</form>
+
+<br>
+
+
+
+
+<h2>classic object detection</h2>
+<br>
+<xmp>
+   classNames = 
+							{0: 'background',
+							1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorcycle', 5: 'airplane', 6: 'bus',
+							7: 'train', 8: 'truck', 9: 'boat', 10: 'traffic light', 11: 'fire hydrant',
+							13: 'stop sign', 14: 'parking meter', 15: 'bench', 16: 'bird', 17: 'cat',
+							18: 'dog', 19: 'horse', 20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear',
+							24: 'zebra', 25: 'giraffe', 27: 'backpack', 28: 'umbrella', 31: 'handbag',
+							32: 'tie', 33: 'suitcase', 34: 'frisbee', 35: 'skis', 36: 'snowboard',
+							37: 'sports ball', 38: 'kite', 39: 'baseball bat', 40: 'baseball glove',
+							41: 'skateboard', 42: 'surfboard', 43: 'tennis racket', 44: 'bottle',
+							46: 'wine glass', 47: 'cup', 48: 'fork', 49: 'knife', 50: 'spoon',
+							51: 'bowl', 52: 'banana', 53: 'apple', 54: 'sandwich', 55: 'orange',
+							56: 'broccoli', 57: 'carrot', 58: 'hot dog', 59: 'pizza', 60: 'donut',
+							61: 'cake', 62: 'chair', 63: 'couch', 64: 'potted plant', 65: 'bed',
+							67: 'dining table', 70: 'toilet', 72: 'tv', 73: 'laptop', 74: 'mouse',
+							75: 'remote', 76: 'keyboard', 77: 'cell phone', 78: 'microwave', 79: 'oven',
+							80: 'toaster', 81: 'sink', 82: 'refrigerator', 84: 'book', 85: 'clock',
+							86: 'vase', 87: 'scissors', 88: 'teddy bear', 89: 'hair drier', 90: 'toothbrush'}
+</xmp>
+
+<br>
+
+<form action = "/classify" method = "POST" enctype = "multipart/form-data">
+	<input type = "file" name = "file" />
+	<input type = "submit"/>
+</form>
+
+<form action = "/classify" method = "GET" enctype = "multipart/form-data">
+	<input type="text" name="url">
+	<input type = "submit"/>
+</form>
+
+<form action = "/classify" method = "GET" enctype = "multipart/form-data">
+  <select name="url">
+    <option value="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/10best-cars-group-cropped-1542126037.jpg">cars</option>
+	<option value="https://peopledotcom.files.wordpress.com/2018/12/books-8.jpg">people</option>
+	<option value="https://i.kinja-img.com/gawker-media/image/upload/t_original/779849287804709034.jpg">football</option>
+	<option value="http://www.inspireafire.com/wp-content/uploads/2015/10/Fruit-Pixabay.jpg">fruit</option>
+  </select>
+  <input type="submit" value = "Submit" name = "url">
+</form>
+
+<br>
+
+
+<h2>parkinglot/driveway detection</h2>
+<xmp>
+   classNames = 
+							{0: 'parkinglots',
+							1: 'driveways'}
+</xmp>
+<form action = "/parkinglot_detection" method = "GET" enctype = "multipart/form-data">
+	<input type="text" name="url">
+	<input type = "submit"/>
+</form>
+<form action = "/parkinglot_detection" method = "GET" enctype = "multipart/form-data">
+  <select name="url">
+	<option value="https://raw.githubusercontent.com/spiyer99/retinanet/master/retinanet/labelled_images/coogee__1929664/img/1929664_1258805.jpg">coogee</option>
+	<option value="https://raw.githubusercontent.com/spiyer99/retinanet/master/retinanet/labelled_images/roseberry__1929374/img/1929374_1258839.jpg">roseberry</option>
+  </select>
+  <input type="submit" value = "Submit" name = "url">
+</form>
+
+
+
+
+
