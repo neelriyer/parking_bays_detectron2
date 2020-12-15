@@ -67,4 +67,8 @@ This augmented data is created using [this script](https://github.com/spiyer99/p
 
 Validation data for the model. You can put whatever images you'd like in here to see how it performs.
 
+# Retinanet
+
+Take a look at https://github.com/spiyer99/retinanet for our initial attempt at this.
+
 
