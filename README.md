@@ -18,9 +18,15 @@ We've been running it from google colab:
 
 ## Running in Docker
 
-In the `container` folder there are a few shell scripts to make it easy to run in docker. See `docker_build_run_see_logs.sh` and `docker_build_run_see_stats.sh`. It will stop all containers, remove any unwanted images and run on port 8080. 
+In the `container` folder there are a few shell scripts to make it easy to run in docker. 
 
-The docker container runs in flask and should open up in your browser at `http://localhost:8080/`. From there you can upload an image and have the ml backend predict where the parkinglots should be. This is probably the easiest way to get started. 
+See `docker_build_run_see_logs.sh` and `docker_build_run_see_stats.sh`. It will stop all containers, remove any unwanted images and run on port 8080. 
+
+The docker container runs in flask and should open up in your browser at `http://localhost:8080/`. 
+
+From there you can upload an image and have the ml backend predict where the parkinglots should be. 
+
+This is probably the easiest way to get started. 
 
 # `real_data`
 
