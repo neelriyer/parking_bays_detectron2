@@ -12,9 +12,9 @@ This is the main folder to run detectron2 from.
 
 We've been running it from google colab: 
 
-[Synthetic and Real Data Data](https://colab.research.google.com/drive/1AA-dqc8vWbf79vvcHabckPpm2eA9hJ61?usp=sharing)
+- [Synthetic and Real Data Data](https://colab.research.google.com/drive/1AA-dqc8vWbf79vvcHabckPpm2eA9hJ61?usp=sharing)
 
-[Real data only](https://colab.research.google.com/drive/1wZchs-5UVhhDe7keXipalDe-yB6U9hyo?usp=sharing)
+- [Real data only](https://colab.research.google.com/drive/1wZchs-5UVhhDe7keXipalDe-yB6U9hyo?usp=sharing)
 
 # `real_data`
 
@@ -30,7 +30,7 @@ I've since deleted most of Unity folder (as it was using too much space on my co
 
 The repository for creating this synthetic data can be found here: https://github.com/spiyer99/synthetic-data/. Please note that this repo won't work as I've deleted the big files but the most important files are still there. 
 
-The C# code to take aerial screenshots of the Unity scene can be found here: https://github.com/spiyer99/synthetic-data/blob/master/Assets/ScreenRecorder.cs
+The C# code to take aerial screenshots of the Unity scene can be found [here](https://github.com/spiyer99/synthetic-data/blob/master/Assets/ScreenRecorder.cs)
 
 
 # `Train`
