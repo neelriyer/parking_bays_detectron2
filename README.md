@@ -32,6 +32,12 @@ The repository for creating this synthetic data can be found here: https://githu
 
 The C# code to take aerial screenshots of the Unity scene can be found [here](https://github.com/spiyer99/synthetic-data/blob/master/Assets/ScreenRecorder.cs)
 
+# `Mask_RCNN`
+
+This was an experiment by me to see if we could get better results using plain mask RCNN. It was very unsuccessful and we went with detectron2 instead. 
+
+You can safely ignore this folder.
+
 
 # `Train`
 
