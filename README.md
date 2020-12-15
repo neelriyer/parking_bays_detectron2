@@ -36,7 +36,9 @@ The `export-2020-01-17T02-45-23.802Z.csv` file contains each file it's correspon
 
 # `synthetic_data`
 
-These are screenshots taken in a Unity game of a parkinglot and city. It's not perfect but we thought it would complement the ML model directly. It's also trivial to create more data from this Unity Scene. 
+These are screenshots taken in a Unity game of a parkinglot and city. 
+
+It's not perfect but we thought it would complement the ML model directly. It's also trivial to create more data from this Unity Scene. 
 
 I've since deleted most of Unity folder (as it was using too much space on my computer) but I've used [this](https://assetstore.unity.com/packages/3d/environments/roadways/windridge-city-132222) scene from the asset store.
 
