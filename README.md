@@ -71,4 +71,8 @@ Validation data for the model. You can put whatever images you'd like in here to
 
 Take a look at https://github.com/spiyer99/retinanet for our initial attempt at this.
 
+# Improvements
+
+We've made a list of things to improve. Take a look at [this](https://docs.google.com/document/d/1Ghxb1rcDcQZuiT_SsF9XdjySSbn8-vbUmNjr04HpMZQ/edit?usp=sharing) google doc. 
+
 
